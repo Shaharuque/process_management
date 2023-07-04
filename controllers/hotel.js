@@ -93,3 +93,16 @@ export const getHotelRooms = async (req, res, next) => {
     next(err);
   }
 };
+
+//find hotel by name
+export const findHotelByName = async (req, res, next) => {
+  try {
+    console.log(req.params.name)
+    const hotel = await Hotel.find({ name: req.params.name });
+    res.status(200).json(hotel);
+  } catch (err) {
+    next(err);
+  }
+}
+
+
