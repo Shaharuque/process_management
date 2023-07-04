@@ -97,6 +97,7 @@ export const getHotelRooms = async (req, res, next) => {
 //find hotel by name
 export const findHotelByName = async (req, res, next) => {
   try {
+    //Testing Just
     console.log(req.params.name)
     const hotel = await Hotel.find({ name: req.params.name });
     res.status(200).json(hotel);
