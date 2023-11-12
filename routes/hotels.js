@@ -1,35 +1,30 @@
 import express from "express";
 import {
-  countByCity,
-  countByType,
   createHotel,
-  deleteHotel,
+  filterHotels,
   findHotelByName,
   getHotel,
-  getHotelRooms,
   getHotels,
-  updateHotel,
+  getNearbyHotels,
 } from "../controllers/hotel.js";
-import Hotel from "../models/Hotel.js";
-import {verifyAdmin} from "../utils/verifyToken.js"
 const router = express.Router();
 
-//CREATE
-router.post("/", verifyAdmin, createHotel);
+//1,2.CREATE hotel
+router.post("/", createHotel);
 
-//UPDATE
-router.put("/:id", verifyAdmin, updateHotel);
-//DELETE
-router.delete("/:id", verifyAdmin, deleteHotel);
-//GET
-
+//GET ONE Hotel
 router.get("/find/:id", getHotel);
-//GET ALL
 
+//3.GET ALL Hotels
 router.get("/", getHotels);
-router.get("/countByCity", countByCity);
-router.get("/countByType", countByType);
-router.get("/room/:id", getHotelRooms);
+
+// 4. SEARCH hotels by name/description
 router.get("/search/:name", findHotelByName)
+
+// 5. FILTER by hotel based on location,price and rating
+router.get("/filter", filterHotels)
+
+//7. get nearest hotels by location and distance
+router.get("/nearest", getNearbyHotels)
 
 export default router;

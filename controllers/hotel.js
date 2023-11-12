@@ -13,7 +13,11 @@ export const createHotel = async (req, res, next) => {
 };
 export const updateHotel = async (req, res, next) => {
   try {
-    const updatedHotel = await Hotel.findByIdAndUpdate(req.params.id, { $set: req.body }, { new: true });
+    const updatedHotel = await Hotel.findByIdAndUpdate(
+      req.params.id,
+      { $set: req.body },
+      { new: true }
+    );
     res.status(200).json(updatedHotel);
   } catch (err) {
     next(err);
@@ -94,16 +98,65 @@ export const getHotelRooms = async (req, res, next) => {
   }
 };
 
-//find hotel by name
+//4. find hotel by name or description
 export const findHotelByName = async (req, res, next) => {
   try {
-    //Testing Just
-    console.log(req.params.name)
-    const hotel = await Hotel.find({ name: req.params.name });
-    res.status(200).json(hotel);
+    const searchTerm = req.params.name; // Assuming you have a single parameter for both name and description
+
+    const hotels = await Hotel.find({
+      $or: [
+        { name: { $regex: searchTerm, $options: "i" } }, // Case-insensitive name search
+        { description: { $regex: searchTerm, $options: "i" } }, // Case-insensitive description search
+      ],
+    });
+    res.status(200).json(hotels);
+  } catch (err) {
+    next(err);
+  }
+};
+
+//5. filter hotels by location, price and rating
+export const filterHotels = async (req, res, next) => {
+  try {
+    const { location, priceRange, reviewRating } = req.query;
+    // const location = req.params.location;
+    
+    const filters = {};
+    
+    if (location) {
+      filters.location = { $regex: location, $options: 'i' }; // Case-insensitive location search
+    }
+    
+    if (priceRange) {
+      // Assuming priceRange is provided as a string like "0-100" or "100-200"
+      const [minPrice, maxPrice] = priceRange.split('-');
+      filters.accomodationPrice = { $gte: parseInt(minPrice), $lte: parseInt(maxPrice) };
+    }
+    
+    if (reviewRating) {
+      filters.rating = { $gte: parseInt(reviewRating) };
+    }
+
+    const hotels = await Hotel.find(filters);
+
+    res.status(200).json(hotels);
   } catch (err) {
     next(err);
   }
 }
 
+//7. nearest hotels by location and distance
+export const getNearbyHotels = async (req, res, next) => {
+  try {
+    const { location, distance } = req.query;
 
+    const hotels = await Hotel.find({
+      location: { $regex: location, $options: 'i' },
+      distance: { $lte: parseInt(distance) },
+    });
+
+    res.status(200).json(hotels);
+  } catch (err) {
+    next(err);
+  }
+}
