@@ -13,7 +13,6 @@ export const createProcess = async (req, res, next) => {
 
     res.status(201).json({ processId });
 
-    // Function to log time
     const logTime = async () => {
       const timeLog = new TimeLog({
         processId,
